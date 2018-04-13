@@ -92,7 +92,7 @@ Notes: All paths in the Run script must be absolute. Variable `PROJECT_DIR` auto
 Also include paths to inherited Classes and Protocols for mocking/stubbing parent and grandparents.  
 
 #### Carthage
-To use Cuckoo with [Carthage](https://github.com/Carthage/Carthage) add this line to your Cartfile :
+To use Cuckoo with [Carthage](https://github.com/Carthage/Carthage) add this line to your Cartfile:
 ```
 github "SwiftKit/Cuckoo"
 ```
