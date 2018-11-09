@@ -16,7 +16,7 @@ To have a chat, [join our Slack team](http://swiftkit.brightify.org)!
 
 ## How does it work
 
-Cuckoo has two parts. One is the [runtime](https://github.com/SwiftKit/Cuckoo) and the other one is an OS X command-line tool simply called [CuckooGenerator](https://github.com/SwiftKit/CuckooGenerator).
+Cuckoo has two parts. One is the [runtime](https://github.com/Brightify/Cuckoo) and the other one is an OS X command-line tool simply called [CuckooGenerator](https://github.com/SwiftKit/CuckooGenerator).
 
 Unfortunately Swift does not have a proper reflection, so we decided to use a compile-time generator to go through files you specify and generate supporting structs/classes that will be used by the runtime in your test target.
 
@@ -94,7 +94,7 @@ Also include paths to inherited Classes and Protocols for mocking/stubbing paren
 #### Carthage
 To use Cuckoo with [Carthage](https://github.com/Carthage/Carthage) add in your Cartfile this line:
 ```
-github "SwiftKit/Cuckoo"
+github "Brightify/Cuckoo"
 ```
 
 Then use the `Run script` from above and replace
