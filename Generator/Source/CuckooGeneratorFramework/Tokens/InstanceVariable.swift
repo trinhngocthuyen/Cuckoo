@@ -7,13 +7,14 @@
 //
 
 public struct InstanceVariable: Token {
-    public var name: String
-    public var type: String
-    public var accessibility: Accessibility
-    public var setterAccessibility: Accessibility?
-    public var range: CountableRange<Int>
-    public var nameRange: CountableRange<Int>
+    public let name: String
+    public let type: String
+    public let accessibility: Accessibility
+    public let setterAccessibility: Accessibility?
+    public let range: CountableRange<Int>
+    public let nameRange: CountableRange<Int>
     public var overriding: Bool
+    public let attributes: [Attribute]
     
     public var readOnly: Bool {
         if let setterAccessibility = setterAccessibility {
@@ -36,7 +37,8 @@ public struct InstanceVariable: Token {
             "isReadOnly": readOnly,
             "stubType": readOnly ?
                 (overriding ? "ClassToBeStubbedReadOnlyProperty" : "ProtocolToBeStubbedReadOnlyProperty") :
-                (overriding ? "ClassToBeStubbedProperty" : "ProtocolToBeStubbedProperty")
+                (overriding ? "ClassToBeStubbedProperty" : "ProtocolToBeStubbedProperty"),
+            "attributes": attributes.filter { $0.isSupported },
         ]
     }
 }
