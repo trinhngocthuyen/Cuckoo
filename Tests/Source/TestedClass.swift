@@ -6,7 +6,9 @@
 //  Copyright © 2016 Brightify. All rights reserved.
 //
 
-import Foundation
+import UIKit.DocumentManager  ; import Foundation
+import class UIKit.UIFont
+import UIKit
 
 class TestedClass {
     
