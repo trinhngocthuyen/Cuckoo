@@ -10,16 +10,16 @@ import Foundation
 extension Templates {
     static let mock = """
 {% for container in containers %}
-class {{ container.mockName }}: {{ container.name }}, {% if container.isImplementation %}Cuckoo.ClassMock{% else %}Cuckoo.ProtocolMock{% endif %} {
-    typealias MocksType = {{ container.name }}
+class {{ container.mockName }}{{ container.genericParameters }}: {{ container.name }}{{ container.genericArguments }}, {% if container.isImplementation %}Cuckoo.ClassMock{% else %}Cuckoo.ProtocolMock{% endif %} {
+    typealias MocksType = {{ container.name }}{{ container.genericArguments }}
     typealias Stubbing = __StubbingProxy_{{ container.name }}
     typealias Verification = __VerificationProxy_{{ container.name }}
 
-    private var __defaultImplStub: {{ container.name }}?
+    private var __defaultImplStub: {{ container.name }}{{ container.genericArguments }}?
 
     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: {{ container.isImplementation }})
 
-    func enableDefaultImplementation(_ stub: {{ container.name }}) {
+    func enableDefaultImplementation(_ stub: {{ container.name }}{{ container.genericArguments }}) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -89,7 +89,6 @@ class {{ container.mockName }}: {{ container.name }}, {% if container.isImplemen
 \(Templates.stubbingProxy.indented())
 
 \(Templates.verificationProxy.indented())
-
 }
 
 \(Templates.noImplStub)

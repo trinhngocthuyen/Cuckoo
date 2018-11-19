@@ -75,6 +75,7 @@ public struct Tokenizer {
             let subtokens = tokenize(dictionary[Key.Substructure.rawValue] as? [SourceKitRepresentable] ?? [])
             let initializers = subtokens.only(Initializer.self)
             let children = subtokens.noneOf(Initializer.self)
+            let genericParameters = subtokens.only(GenericParameter.self)
 
             return ProtocolDeclaration(
                 name: name,
@@ -84,7 +85,8 @@ public struct Tokenizer {
                 bodyRange: bodyRange!,
                 initializers: initializers,
                 children: children,
-                inheritedTypes: tokenizedInheritedTypes)
+                inheritedTypes: tokenizedInheritedTypes,
+                genericParameters: genericParameters)
 
         case Kinds.ClassDeclaration.rawValue:
             let subtokens = tokenize(dictionary[Key.Substructure.rawValue] as? [SourceKitRepresentable] ?? [])
@@ -97,6 +99,7 @@ public struct Tokenizer {
                     return child
                 }
             }
+            let genericParameters = subtokens.only(GenericParameter.self)
 
             return ClassDeclaration(
                 name: name,
@@ -106,7 +109,8 @@ public struct Tokenizer {
                 bodyRange: bodyRange!,
                 initializers: initializers,
                 children: children,
-                inheritedTypes: tokenizedInheritedTypes)
+                inheritedTypes: tokenizedInheritedTypes,
+                genericParameters: genericParameters)
 
         case Kinds.ExtensionDeclaration.rawValue:
             return ExtensionDeclaration(range: range!)
@@ -173,6 +177,12 @@ public struct Tokenizer {
                     parameters: parameters)
             }
 
+        case Kinds.GenericParameter.rawValue:
+            return tokenize(parameterLabel: nil, parameter: representable)
+
+        case Kinds.AssociatedType.rawValue:
+            return nil
+
         default:
             // Do not log anything, until the parser contains all known cases.
             // stderrPrint("Unknown kind. Dictionary: \(dictionary) \(file.path ?? "")")
@@ -195,10 +205,10 @@ public struct Tokenizer {
             return kind == Kinds.MethodParameter.rawValue
         }
 
-        return zip(parameterLabels, filteredParameters).compactMap(tokenize)
+        return zip(parameterLabels, filteredParameters).compactMap { tokenize(parameterLabel: $0, parameter: $1) as? MethodParameter }
     }
 
-    private func tokenize(parameterLabel: String?, parameter: SourceKitRepresentable) -> MethodParameter? {
+    private func tokenize(parameterLabel: String?, parameter: SourceKitRepresentable) -> Token? {
         guard let dictionary = parameter as? [String: SourceKitRepresentable] else { return nil }
         
         let name = dictionary[Key.Name.rawValue] as? String ?? Tokenizer.nameNotSet
@@ -210,6 +220,17 @@ public struct Tokenizer {
         switch kind {
         case Kinds.MethodParameter.rawValue:
             return MethodParameter(label: parameterLabel, name: name, type: type!, range: range!, nameRange: nameRange!)
+
+        case Kinds.GenericParameter.rawValue:
+            let inheritedTypeElement = (dictionary[Key.InheritedTypes.rawValue] as? [SourceKitRepresentable] ?? []).first
+            let inheritedType = (inheritedTypeElement as? [String: SourceKitRepresentable] ?? [:])[Key.Name.rawValue] as? String
+            let inheritanceDeclaration: InheritanceDeclaration?
+            if let inheritedType = inheritedType {
+                inheritanceDeclaration = .init(name: inheritedType)
+            } else {
+                inheritanceDeclaration = nil
+            }
+            return GenericParameter(name: name, range: range!, inheritedType: inheritanceDeclaration)
 
         default:
             stderrPrint("Unknown method parameter. Dictionary: \(dictionary) \(file.path ?? "")")
