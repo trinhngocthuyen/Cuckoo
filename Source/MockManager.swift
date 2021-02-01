@@ -69,6 +69,8 @@ public class MockManager {
             return try superclassCall()
         } else if isDefaultImplementationEnabled {
             return try defaultCall()
+        } else if OUT.self == Void.self, let result = () as? OUT {
+          return result
         } else {
             failAndCrash("No stub for method `\(method)` using parameters \(parameters).")
         }
